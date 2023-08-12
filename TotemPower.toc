@@ -1,0 +1,51 @@
+## Interface: 30401
+## Author: TheBoringDad
+## Version: 0.1
+## Title: TotemPower
+## Notes: Totem helper for Shaman
+## SavedVariables: TOTEM_POWER_ACCOUNT
+## SavedVariablesPerCharacter: TOTEM_POWER_CHARACTER
+
+
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDbIcon-1.0\LibDbIcon-1.0.lua
+Libs\ChatThrottleLib.lua
+Libs\json.lua
+Libs\LibDeflate\LibDeflate.lua
+Libs\AceComm-3.0\AceComm-3.0.xml
+Libs\LibSerialize\lib.xml
+Libs\LibCraftInfo-1.0\LibCraftInfo-1.0.xml
+
+Widgets\Listview.lua
+Widgets\Listview.xml
+Widgets\Gridview.lua
+Widgets\Gridview.xml
+Widgets\Dropdown.lua
+Widgets\Dropdown.xml
+Widgets\Checkbox.xml
+Widgets\ScrollFrame.lua
+Widgets\ScrollFrame.xml
+Widgets\Slider.xml
+Widgets\Helptips.lua
+Widgets\Helptips.xml
+
+Database.lua
+
+Classes\Character.lua
+Classes\Talents.lua
+
+Dialogs.lua
+
+Globals.lua
+Callbacks.lua
+Comms.lua
+
+Templates.lua
+Templates.xml
+
+TotemPower.lua
+TotemPower.xml
+
+Events.lua
