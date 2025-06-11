@@ -1,0 +1,76 @@
+<Ui>
+
+    <Frame name="TotemPowerTotemBar" mixin="TotemPowerTotemBarMixin" parent="UIParent" enableMouse="true" movable="true">
+        <Anchors>
+            <Anchor point="CENTER" x="0" y="0"/>
+        </Anchors>
+        <Size x="160" y="40"/>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnDragStart>
+                self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                self:StopMovingOrSizing()
+            </OnDragStop>
+        </Scripts>
+    </Frame>
+
+    <Frame name="TotemPowerUi" mixin="TotemPowerMixin" parent="UIParent" frameStrata="MEDIUM" enableMouse="true" movable="true">
+
+        <Anchors>
+            <Anchor point="CENTER" x="0" y="0"/>
+        </Anchors>
+
+        <Size x="500" y="300"/>
+
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Title" inherits="GameFontNormalLarge">
+                    <Anchors>
+                        <Anchor point="TOP" x="0" y="-10"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+
+        <Frames>
+
+            <Button parentKey="Close" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="1" y="-3"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        HideUIPanel(self:GetParent())
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+            <Frame parentKey="CharacterList" inherits="TBDListviewTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="20" y="-30"/>
+                    <Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="itemTemplate" value="TotemPowerCharacterTemplate" type="string"/>
+                    <KeyValue key="elementHeight" value="50" type="number"/>
+                </KeyValues>
+            </Frame>
+        </Frames>
+
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnDragStart>
+                self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                self:StopMovingOrSizing()
+            </OnDragStop>
+        </Scripts>
+    </Frame>
+
+
+
+
+</Ui>

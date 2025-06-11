@@ -1,9 +1,10 @@
 <Ui>
 
     <Button name="TotemPowerSecureButton" mixin="TotemPowerSecureButtonMixin" inherits="SecureActionButtonTemplate" virtual="true">
+        <Size x="36" y="36"/>
         <Layers>
             <Layer level="ARTWORK">
-                <Texture parentKey="icon">
+                <Texture parentKey="Icon">
                     <Anchors>
                         <Anchor point="TOPLEFT" x="2" y="-2"/>
                         <Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
@@ -16,242 +17,69 @@
         </Scripts>
     </Button>
 
-    <Frame name="TotemPowerTotemAssignSelectorTemplate" enableMouse="true" virtual="true">
+    <Button name="TotemPowerTotemSelectorButton" mixin="TotemPowerTotemSelectorButtonMixin" virtual="true">
+        <Size x="40" y="40"/>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnClick method="OnClick"/>
+        </Scripts>
+    </Button>
+
+    <Frame name="TotemPowerCharacterTemplate" mixin="TotemPowerCharacterMixin" enableMouse="true" virtual="true">
         <Layers>
-            <Layer level="HIGHLIGHT">
-                <Texture parentKey="highlight">
-                    <Color r="1" g="1" b="1" a="0.1"/>
-                </Texture>
-            </Layer>
             <Layer level="ARTWORK">
-                <Texture parentKey="icon">
+                <Texture parentKey="Icon">
                     <Anchors>
-                        <Anchor point="TOPLEFT" x="8" y="-8"/>
-                        <Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+                        <Anchor point="TOPLEFT" x="10" y="-10"/>
                     </Anchors>
                 </Texture>
             </Layer>
-        </Layers>
-    </Frame>
-
-    <Frame name="TotemPowerCharacterAssignmentTemplate" mixin="TotemPowerCharacterAssignmentMixin" virtual="true">
-
-        <Layers>
             <Layer level="OVERLAY">
-                <FontString parentKey="name" inherits="GameFontNormal">
+                <FontString parentKey="Name" inherits="GameFontNormalLarge">
                     <Anchors>
-                        <Anchor point="TOPLEFT" x="0" y="0"/>
+                        <Anchor point="BOTTOMLEFT" x="10" y="10"/>
                     </Anchors>
                 </FontString>
             </Layer>
         </Layers>
 
         <Frames>
-
-            <Frame parentKey="elements">
-                <Size x="120"/>
+            <Button parentKey="Earth" inherits="TotemPowerTotemSelectorButton">
                 <Anchors>
-                    <Anchor point="TOPLEFT" x="140" y="0"/>
-                    <Anchor point="BOTTOMLEFT" x="140" y="0"/>
+                    <Anchor point="LEFT" x="100" y="0"/>
                 </Anchors>
-
-                <Layers>
-                    <Layer level="BACKGROUND">
-                        <Texture>
-                            <Color r="0.56" g="0.176" b="0.019" a="0.5"/>
-                        </Texture>
-                    </Layer>
-                </Layers>
-
-                <Frames>
-                    <Frame parentKey="fire" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="TOPLEFT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="earth" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="TOPRIGHT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="water" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="air" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="BOTTOMLEFT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                </Frames>
-
-            </Frame>
-
-            <Frame parentKey="ancestors">
-                <Size x="120"/>
+                <KeyValues>
+                    <KeyValue key="Element" value="Earth" type="string"/>
+                </KeyValues>
+            </Button>
+            <Button parentKey="Fire" inherits="TotemPowerTotemSelectorButton">
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeKey="$parent.elements" relativePoint="TOPRIGHT" x="0" y="0"/>
-                    <Anchor point="BOTTOMLEFT" relativeKey="$parent.elements" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    <Anchor point="LEFT" relativeKey="$parent.Earth" relativePoint="RIGHT" x="10" y="0"/>
                 </Anchors>
-
-                <Layers>
-                    <Layer level="BACKGROUND">
-                        <Texture>
-                            <Color r="0.2" g="0.521" b="0.647" a="0.5"/>
-                        </Texture>
-                    </Layer>
-                </Layers>
-
-                <Frames>
-                    <Frame parentKey="fire" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="TOPLEFT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="earth" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="TOPRIGHT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="water" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="air" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="BOTTOMLEFT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                </Frames>
-
-            </Frame>
-
-            <Frame parentKey="spirits">
-                <Size x="120"/>
+                <KeyValues>
+                    <KeyValue key="Element" value="Fire" type="string"/>
+                </KeyValues>
+            </Button>
+            <Button parentKey="Water" inherits="TotemPowerTotemSelectorButton">
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeKey="$parent.ancestors" relativePoint="TOPRIGHT" x="0" y="0"/>
-                    <Anchor point="BOTTOMLEFT" relativeKey="$parent.ancestors" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    <Anchor point="LEFT" relativeKey="$parent.Fire" relativePoint="RIGHT" x="10" y="0"/>
                 </Anchors>
-
-                <Layers>
-                    <Layer level="BACKGROUND">
-                        <Texture>
-                            <Color r="0.647" g="0.2" b="0.521" a="0.5"/>
-                        </Texture>
-                    </Layer>
-                </Layers>
-
-                <Frames>
-                    <Frame parentKey="fire" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="TOPLEFT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="earth" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="TOPRIGHT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="water" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="air" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="BOTTOMLEFT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                </Frames>
-
-            </Frame>
-
-            <Frame parentKey="shields">
-
-                <Size x="120" y="60"/>
+                <KeyValues>
+                    <KeyValue key="Element" value="Water" type="string"/>
+                </KeyValues>
+            </Button>
+            <Button parentKey="Air" inherits="TotemPowerTotemSelectorButton">
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeKey="$parent.spirits" relativePoint="TOPRIGHT" x="0" y="0"/>
-                    <!-- <Anchor point="BOTTOMLEFT" relativeKey="$parent.spirits" relativePoint="BOTTOMRIGHT" x="0" y="0"/> -->
+                    <Anchor point="LEFT" relativeKey="$parent.Water" relativePoint="RIGHT" x="10" y="0"/>
                 </Anchors>
-
-                <Layers>
-                    <Layer level="BACKGROUND">
-                        <Texture>
-                            <Color r="0.147" g="0.6" b="0.521" a="0.5"/>
-                        </Texture>
-                    </Layer>
-                </Layers>
-
-                <Frames>
-                    <Frame parentKey="player" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="TOPLEFT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="target" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="TOPRIGHT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                </Frames>
-                
-            </Frame>
-
-            <Frame parentKey="embues">
-
-                <Size x="120" y="60"/>
-                <Anchors>
-                    <!-- <Anchor point="TOPLEFT" relativeKey="$parent.shields" relativePoint="TOPRIGHT" x="0" y="0"/> -->
-                    <Anchor point="BOTTOMLEFT" relativeKey="$parent.spirits" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-                </Anchors>
-
-                <Layers>
-                    <Layer level="BACKGROUND">
-                        <Texture>
-                            <Color r="0.674" g="0.521" b="0.147" a="0.5"/>
-                        </Texture>
-                    </Layer>
-                </Layers>
-
-                <Frames>
-                    <Frame parentKey="mainHand" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="TOPLEFT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                    <Frame parentKey="offHand" inherits="TotemPowerTotemAssignSelectorTemplate">
-                        <Size x="60" y="60"/>
-                        <Anchors>
-                            <Anchor point="TOPRIGHT" x="0" y="0"/>
-                        </Anchors>
-                    </Frame>
-                </Frames>
-
-            </Frame>
-
-
+                <KeyValues>
+                    <KeyValue key="Element" value="Air" type="string"/>
+                </KeyValues>
+            </Button>
         </Frames>
 
-        <Scripts>
-            <OnLoad method="OnLoad"/>
-        </Scripts>
+
     </Frame>
+
 
 </Ui>
