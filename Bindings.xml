@@ -1,0 +1,6 @@
+<Bindings>
+    <Binding category="BINDING_HEADER_TOTEMPOWER" name="CLICK TotemPowerTotemBarActionButtonSlot1:LeftButton"/>
+    <Binding category="BINDING_HEADER_TOTEMPOWER" name="CLICK TotemPowerTotemBarActionButtonSlot2:LeftButton"/>
+    <Binding category="BINDING_HEADER_TOTEMPOWER" name="CLICK TotemPowerTotemBarActionButtonSlot3:LeftButton"/>
+    <Binding category="BINDING_HEADER_TOTEMPOWER" name="CLICK TotemPowerTotemBarActionButtonSlot4:LeftButton"/>
+</Bindings>

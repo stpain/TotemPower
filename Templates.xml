@@ -1,5 +1,14 @@
 <Ui>
 
+    <Frame name="TotemPowerBaseTooltipFrame" mixin="TBDBaseTooltipMixin" virtual="true">
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave>
+                GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
+            </OnLeave>
+        </Scripts>
+    </Frame>
+
     <Button name="TotemPowerSecureButton" mixin="TotemPowerSecureButtonMixin" inherits="SecureActionButtonTemplate" virtual="true">
         <Size x="36" y="36"/>
         <Layers>
@@ -18,7 +27,7 @@
     </Button>
 
     <Button name="TotemPowerTotemSelectorButton" mixin="TotemPowerTotemSelectorButtonMixin" virtual="true">
-        <Size x="40" y="40"/>
+        <Size x="30" y="30"/>
         <Scripts>
             <OnLoad method="OnLoad"/>
             <OnClick method="OnClick"/>
@@ -27,17 +36,11 @@
 
     <Frame name="TotemPowerCharacterTemplate" mixin="TotemPowerCharacterMixin" enableMouse="true" virtual="true">
         <Layers>
-            <Layer level="ARTWORK">
-                <Texture parentKey="Icon">
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="10" y="-10"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
             <Layer level="OVERLAY">
-                <FontString parentKey="Name" inherits="GameFontNormalLarge">
+                <FontString parentKey="Name" inherits="GameFontNormal" justifyH="Left">
+                    <Size x="120" y="40"/>
                     <Anchors>
-                        <Anchor point="BOTTOMLEFT" x="10" y="10"/>
+                        <Anchor point="TOPLEFT" x="1" y="-1"/>
                     </Anchors>
                 </FontString>
             </Layer>
@@ -46,7 +49,7 @@
         <Frames>
             <Button parentKey="Earth" inherits="TotemPowerTotemSelectorButton">
                 <Anchors>
-                    <Anchor point="LEFT" x="100" y="0"/>
+                    <Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="10" y="0"/>
                 </Anchors>
                 <KeyValues>
                     <KeyValue key="Element" value="Earth" type="string"/>

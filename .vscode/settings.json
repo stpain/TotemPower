@@ -34,6 +34,18 @@
         "GameTooltip_SetDefaultAnchor",
         "NineSliceUtil",
         "class",
-        "Event"
+        "Event",
+        "TabSystemButtonArtMixin",
+        "GameTooltip_Hide",
+        "GetAppropriateTooltip",
+        "GameTooltip_AddErrorLine",
+        "GameTooltip_AddNormalLine",
+        "GameTooltip_AddBlankLineToTooltip",
+        "GetKeysArray",
+        "GetOrCreateTableEntry",
+        "PanelTemplates_SetNumTabs",
+        "PanelTemplates_SetTab",
+        "PROFESSIONS_RECIPES_TAB_NAME",
+        "MAX_RAID_MEMBERS"
     ]
 }

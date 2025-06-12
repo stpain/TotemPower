@@ -22,6 +22,9 @@ Data.lua
 Callbacks.lua
 Comms.lua
 
+TabSystemTemplates.lua
+TabSystemTemplates.xml
+
 Templates.lua
 Templates.xml
 

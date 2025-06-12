@@ -5,6 +5,13 @@
             <Anchor point="CENTER" x="0" y="0"/>
         </Anchors>
         <Size x="160" y="40"/>
+        <!-- <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Background">
+                    <Color r="0.1" g="0.1" b="0.1" a="0.4"/>
+                </Texture>
+            </Layer>
+        </Layers> -->
         <Scripts>
             <OnLoad method="OnLoad"/>
             <OnDragStart>
@@ -16,13 +23,13 @@
         </Scripts>
     </Frame>
 
-    <Frame name="TotemPowerUi" mixin="TotemPowerMixin" parent="UIParent" frameStrata="MEDIUM" enableMouse="true" movable="true">
+    <Frame name="TotemPowerUi" mixin="TotemPowerMixin" parent="UIParent" frameStrata="MEDIUM" enableMouse="true" movable="true" hidden="true">
 
         <Anchors>
             <Anchor point="CENTER" x="0" y="0"/>
         </Anchors>
 
-        <Size x="500" y="300"/>
+        <Size x="400" y="300"/>
 
         <Layers>
             <Layer level="OVERLAY">
@@ -47,20 +54,51 @@
                 </Scripts>
             </Button>
 
+            <Button parentKey="GroupSelectionButton" inherits="UIPanelButtonTemplate" text="Group">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="20" y="-50"/>
+                </Anchors>
+                <Size x="80" y="22"/>
+            </Button>
+
             <Frame parentKey="CharacterList" inherits="TBDListviewTemplate">
                 <Anchors>
-                    <Anchor point="TOPLEFT" x="20" y="-30"/>
+                    <Anchor point="TOPLEFT" x="20" y="-80"/>
                     <Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
                 </Anchors>
                 <KeyValues>
                     <KeyValue key="itemTemplate" value="TotemPowerCharacterTemplate" type="string"/>
-                    <KeyValue key="elementHeight" value="50" type="number"/>
+                    <KeyValue key="elementHeight" value="40" type="number"/>
                 </KeyValues>
             </Frame>
+
+            <Frame parentKey="TotemSetsList" inherits="TBDListviewTemplate" hidden="true">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="20" y="-80"/>
+                    <Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="itemTemplate" value="TotemPowerCharacterTemplate" type="string"/>
+                    <KeyValue key="elementHeight" value="40" type="number"/>
+                </KeyValues>
+            </Frame>
+
+			<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
+				<KeyValues>
+					<KeyValue key="minTabWidth" value="90" type="number"/>
+					<KeyValue key="maxTabWidth" value="120" type="number"/>
+					<KeyValue key="tabTemplate" value="TabSystemButtonTemplate" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="22" y="2"/>
+				</Anchors>
+			</Frame>
+
         </Frames>
 
         <Scripts>
             <OnLoad method="OnLoad"/>
+            <OnEvent method="OnEvent"/>
             <OnDragStart>
                 self:StartMoving()
             </OnDragStart>

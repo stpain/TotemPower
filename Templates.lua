@@ -8,6 +8,19 @@ local client = "Vanilla";
 
 
 
+TBDBaseTooltipMixin = {}
+function TBDBaseTooltipMixin:OnEnter()
+    if self.SpellID then
+        GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
+        GameTooltip:SetSpellByID(self.SpellID)
+        GameTooltip:Show()
+    end
+end
+
+
+
+
+
 --[[
     TotemSelectorButton
 
@@ -66,9 +79,27 @@ end
 
 
 TotemPowerCharacterMixin = {}
+function TotemPowerCharacterMixin:OnLoad()
+
+    self.TalentButtons = {}
+    local lastButton;
+    for k, talents in ipairs(TotemPower.TalentData[client]) do
+        local button = CreateFrame("Frame", nil, self, "TotemPowerBaseTooltipFrame")
+        if not lastButton then
+            button:SetPoint("BOTTOMLEFT", 1, 1)
+            lastButton = button
+        else
+            button:SetPoint("LEFT", lastButton, "RIGHT", 2, 0)
+            lastButton = button
+        end
+        button.Talents = talents;
+        table.insert(self.TalentButtons, button)
+    end
+
+end
 function TotemPowerCharacterMixin:SetDataBinding(binding, height)
-    self.Player = binding.name;
-    self.Name:SetText(binding.name)
+    self.Player = binding.Name;
+    self.Name:SetText(binding.Name)
 end
 
 function TotemPowerCharacterMixin:ResetDataBinding()
@@ -82,30 +113,11 @@ end
 
 
 
+--[[
+    TotemPowerSecureButton
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    Secure Action Button, this is the action bar type button, its used in the totem bar (like in wrath with the 4 elements)
+]]
 TotemPowerSecureButtonMixin = {}
 function TotemPowerSecureButtonMixin:OnLoad()
     self:RegisterForClicks("AnyUp", "AnyDown")
@@ -127,12 +139,10 @@ function TotemPowerSecureButtonMixin:CharacterTotem_OnSelectionChanged(info)
         spell:ContinueOnSpellLoad(function()
             self.Icon:SetTexture(C_Spell.GetSpellTexture(info.SpellID))
             self:SetAttribute("type", "spell")
-            self:SetAttribute("spell", info.SpellID)
+            self:SetAttribute("spell", C_Spell.GetSpellName(info.SpellID))
         end)
     end
 end
-
-
 
 
 

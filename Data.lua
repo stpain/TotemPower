@@ -41,3 +41,19 @@ TotemPower.TotemData = {
 
     },
 }
+
+
+TotemPower.TalentData = {
+    Vanilla = {
+        { 16038, 16160, 16161, }, --call of flame - increase fire totem damage
+        { 16086, 16544, }, --improved fire totems
+        { 16089, }, --elemental fury
+        { 16258, 16293, }, --guardian totems
+        { 16259, 16295, }, --enhancing totems
+        { 29192, 29193, }, --enhanced weapons
+        { 16173, 16222, 16223, 16224, 16225, }, --totemic focus
+        { 16189, }, --totemic mastery
+        { 16187, 16205, 16206, 16207, 16208, }, --restore totems
+        { 16190, }, --mana tide
+    }
+}
