@@ -29,7 +29,7 @@
             <Anchor point="CENTER" x="0" y="0"/>
         </Anchors>
 
-        <Size x="400" y="300"/>
+        <Size x="450" y="360"/>
 
         <Layers>
             <Layer level="OVERLAY">
@@ -54,13 +54,6 @@
                 </Scripts>
             </Button>
 
-            <Button parentKey="GroupSelectionButton" inherits="UIPanelButtonTemplate" text="Group">
-                <Anchors>
-                    <Anchor point="TOPLEFT" x="20" y="-50"/>
-                </Anchors>
-                <Size x="80" y="22"/>
-            </Button>
-
             <Frame parentKey="CharacterList" inherits="TBDListviewTemplate">
                 <Anchors>
                     <Anchor point="TOPLEFT" x="20" y="-80"/>
@@ -68,8 +61,16 @@
                 </Anchors>
                 <KeyValues>
                     <KeyValue key="itemTemplate" value="TotemPowerCharacterTemplate" type="string"/>
-                    <KeyValue key="elementHeight" value="40" type="number"/>
+                    <KeyValue key="elementHeight" value="44" type="number"/>
                 </KeyValues>
+                <Frames>
+                    <Button parentKey="GroupSelectionButton" inherits="UIPanelButtonTemplate" text="Select Group">
+                        <Anchors>
+                            <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="1" y="10"/>
+                        </Anchors>
+                        <Size x="120" y="22"/>
+                    </Button>
+                </Frames>
             </Frame>
 
             <Frame parentKey="TotemSetsList" inherits="TBDListviewTemplate" hidden="true">
@@ -90,7 +91,7 @@
 					<KeyValue key="tabTemplate" value="TabSystemButtonTemplate" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="22" y="2"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="22" y="-10"/>
 				</Anchors>
 			</Frame>
 
@@ -99,6 +100,7 @@
         <Scripts>
             <OnLoad method="OnLoad"/>
             <OnEvent method="OnEvent"/>
+            <OnShow method="OnShow"/>
             <OnDragStart>
                 self:StartMoving()
             </OnDragStart>

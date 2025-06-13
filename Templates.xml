@@ -1,6 +1,6 @@
 <Ui>
 
-    <Frame name="TotemPowerBaseTooltipFrame" mixin="TBDBaseTooltipMixin" virtual="true">
+    <Frame name="TotemPowerBaseTooltipFrame" mixin="TBDBaseTooltipMixin" enableMouse="true" virtual="true">
         <Scripts>
             <OnEnter method="OnEnter"/>
             <OnLeave>
@@ -27,7 +27,7 @@
     </Button>
 
     <Button name="TotemPowerTotemSelectorButton" mixin="TotemPowerTotemSelectorButtonMixin" virtual="true">
-        <Size x="30" y="30"/>
+        <Size x="36" y="36"/>
         <Scripts>
             <OnLoad method="OnLoad"/>
             <OnClick method="OnClick"/>
@@ -36,51 +36,61 @@
 
     <Frame name="TotemPowerCharacterTemplate" mixin="TotemPowerCharacterMixin" enableMouse="true" virtual="true">
         <Layers>
-            <Layer level="OVERLAY">
-                <FontString parentKey="Name" inherits="GameFontNormal" justifyH="Left">
-                    <Size x="120" y="40"/>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Background" atlas="communitiesfinder-card" hidden="true">
                     <Anchors>
                         <Anchor point="TOPLEFT" x="1" y="-1"/>
+                        <Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Name" inherits="GameFontNormal" justifyH="Left">
+                    <Size x="160" y="18"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="4" y="-4"/>
                     </Anchors>
                 </FontString>
             </Layer>
         </Layers>
 
         <Frames>
-            <Button parentKey="Earth" inherits="TotemPowerTotemSelectorButton">
-                <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="10" y="0"/>
-                </Anchors>
-                <KeyValues>
-                    <KeyValue key="Element" value="Earth" type="string"/>
-                </KeyValues>
-            </Button>
-            <Button parentKey="Fire" inherits="TotemPowerTotemSelectorButton">
-                <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.Earth" relativePoint="RIGHT" x="10" y="0"/>
-                </Anchors>
-                <KeyValues>
-                    <KeyValue key="Element" value="Fire" type="string"/>
-                </KeyValues>
-            </Button>
-            <Button parentKey="Water" inherits="TotemPowerTotemSelectorButton">
-                <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.Fire" relativePoint="RIGHT" x="10" y="0"/>
-                </Anchors>
-                <KeyValues>
-                    <KeyValue key="Element" value="Water" type="string"/>
-                </KeyValues>
-            </Button>
             <Button parentKey="Air" inherits="TotemPowerTotemSelectorButton">
                 <Anchors>
-                    <Anchor point="LEFT" relativeKey="$parent.Water" relativePoint="RIGHT" x="10" y="0"/>
+                    <Anchor point="RIGHT" x="-4" y="0"/>
                 </Anchors>
                 <KeyValues>
                     <KeyValue key="Element" value="Air" type="string"/>
                 </KeyValues>
             </Button>
+            <Button parentKey="Water" inherits="TotemPowerTotemSelectorButton">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent.Air" relativePoint="LEFT" x="-10" y="0"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="Element" value="Water" type="string"/>
+                </KeyValues>
+            </Button>
+            <Button parentKey="Fire" inherits="TotemPowerTotemSelectorButton">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent.Water" relativePoint="LEFT" x="-10" y="0"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="Element" value="Fire" type="string"/>
+                </KeyValues>
+            </Button>
+            <Button parentKey="Earth" inherits="TotemPowerTotemSelectorButton">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent.Fire" relativePoint="LEFT" x="-10" y="0"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="Element" value="Earth" type="string"/>
+                </KeyValues>
+            </Button>
         </Frames>
-
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
 
     </Frame>
 

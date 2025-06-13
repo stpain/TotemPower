@@ -7,50 +7,64 @@ local LibDeflate = LibStub:GetLibrary("LibDeflate")
 local LibSerialize = LibStub:GetLibrary("LibSerialize")
 
 local Comms = {
-    prefix = "TotemPower", --name var was to long
-    version = 1,
-    paused = false,
+    Prefix = "TotemPower", --name var was to long
+    Version = 1,
+    Paused = false,
+
+    Group = "RAID",
+    Whisper = "WHISPER",
 };
+
+
+TotemPower.PlayerTalentsCache = {}
+TotemPower.PlayerTotemsCache = {}
 
 
 function Comms:Init()
     
     AceComm:Embed(self);
-    self:RegisterComm(self.prefix);
+    self:RegisterComm(self.Prefix);
 
-    self.version = tonumber(C_AddOns.GetAddOnMetadata(name, "Version"));
+    self.Version = tonumber(C_AddOns.GetAddOnMetadata(name, "Version"));
 
 end
 
 function Comms:Player_Regen_Enabled()
-    self.paused = false;
+    self.Paused = false;
 end
 
 function Comms:Player_Regen_Disabled()
-    self.paused = true;
+    self.Paused = true;
 end
 
 
 function Comms:Transmit(msg, channel, target)
 
-    msg.version = self.version;
-    msg.senderGuid = UnitGUID("player");
+    msg.Version = self.Version;
 
     local serialized = LibSerialize:Serialize(msg);
     local compressed = LibDeflate:CompressDeflate(serialized);
     local encoded    = LibDeflate:EncodeForWoWAddonChannel(compressed);
-    self:SendCommMessage(self.prefix, encoded, channel, target, "NORMAL")
+    self:SendCommMessage(self.Prefix, encoded, channel, target, "NORMAL")
 end
 
 local CallbackEvents = {
-    CharacterTotem_OnSelectionChanged = function(payload)
+    CharacterTotem_OnSelectionChanged = function(sender, payload)
+        if not TotemPower.PlayerTotemsCache[payload.TargetPlayer] then
+            TotemPower.PlayerTotemsCache[payload.TargetPlayer] = {}
+        end
+        TotemPower.PlayerTotemsCache[payload.TargetPlayer][payload.Element] = payload
         TotemPower.CallbackRegistry:TriggerEvent("CharacterTotem_OnSelectionChanged", payload)
+    end,
+    CharacterTalents_OnBroadcast = function(sender, payload)
+        TotemPower.PlayerTalentsCache[payload.TargetPlayer] = payload;
+        TotemPower.CallbackRegistry:TriggerEvent("CharacterTalents_OnBroadcast", payload)
     end,
 }
 
-function Comms:OnCommReceived(prefix, message, distribution, sender)
+function Comms:OnCommReceived(Prefix, message, distribution, sender)
 
-    if prefix ~= self.prefix then 
+    if Prefix ~= self.Prefix then 
         return 
     end
     local decoded = LibDeflate:DecodeForWoWAddonChannel(message);
@@ -69,10 +83,14 @@ function Comms:OnCommReceived(prefix, message, distribution, sender)
     data.sender = sender;
 
     if CallbackEvents[data.Event] then
-        CallbackEvents[data.Event](data.Payload)
+        CallbackEvents[data.Event](sender, data.Payload)
     end
 
-    --DevTools_Dump(data)
+    print("------------------------")
+    print(sender)
+    print("------------------------")
+    DevTools_Dump(data)
+    print("========================")
 end
 
 

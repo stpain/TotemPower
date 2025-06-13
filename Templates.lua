@@ -4,9 +4,6 @@ local name, TotemPower = ...;
 
 local Comms = TotemPower.Comms;
 
-local client = "Vanilla";
-
-
 
 TBDBaseTooltipMixin = {}
 function TBDBaseTooltipMixin:OnEnter()
@@ -31,7 +28,7 @@ TotemPowerTotemSelectorButtonMixin = {}
 function TotemPowerTotemSelectorButtonMixin:OnLoad()
     self.SelectedIndex = 1
     if self.Element then
-        self.TotemData = TotemPower.TotemData[client][self.Element]
+        self.TotemData = TotemPower.TotemData[TotemPower.Client][self.Element]
     end
     self:SetNormalTexture(310733)
     self:RegisterForClicks("AnyDown")
@@ -54,7 +51,7 @@ function TotemPowerTotemSelectorButtonMixin:OnClick()
                 SelectedIndex = self.SelectedIndex,
                 SpellID = self.TotemData[self.SelectedIndex]
             },
-        }, "WHISPER", UnitName("player"))
+        }, Comms.Group)
     end
 
 end
@@ -76,35 +73,101 @@ function TotemPowerTotemSelectorButtonMixin:CharacterTotem_OnSelectionChanged(in
     end
 end
 
+function TotemPowerTotemSelectorButtonMixin:ResetTotem()
+    self.SelectedIndex = 1;
+    self:SetNormalTexture(310733)
+    self.SpellID = nil
+end
 
+
+
+
+
+
+
+local function TalentIconFrameResetFunc(_, frame)
+    frame.SpellID = nil;
+    if frame.Rank then
+        frame.Rank:SetText("")
+    end
+    frame:ClearAllPoints()
+    frame:Hide()
+end
+
+local function InitTalentIconFrame(frame)
+    frame:SetSize(16, 16)
+    frame.Rank = frame:CreateFontString(nil, "OVERLAY", "GameFontWhite")
+    frame.Rank:SetPoint("LEFT", frame, "RIGHT", 2, 0)
+    frame.Rank:SetText("0")
+    frame.Icon = frame:CreateTexture(nil, "ARTWORK")
+    frame.Icon:SetAllPoints()
+end
 
 TotemPowerCharacterMixin = {}
 function TotemPowerCharacterMixin:OnLoad()
 
-    self.TalentButtons = {}
-    local lastButton;
-    for k, talents in ipairs(TotemPower.TalentData[client]) do
-        local button = CreateFrame("Frame", nil, self, "TotemPowerBaseTooltipFrame")
-        if not lastButton then
-            button:SetPoint("BOTTOMLEFT", 1, 1)
-            lastButton = button
-        else
-            button:SetPoint("LEFT", lastButton, "RIGHT", 2, 0)
-            lastButton = button
-        end
-        button.Talents = talents;
-        table.insert(self.TalentButtons, button)
-    end
+    NineSliceUtil.ApplyLayout(self, TotemPower.Layouts.Tooltip)
+
+    TotemPower.CallbackRegistry:RegisterCallback("CharacterTalents_OnBroadcast", self.CharacterTalents_OnBroadcast, self)
+
+    self.TalentIcons = CreateFramePool("Frame", self, "TotemPowerBaseTooltipFrame", TalentIconFrameResetFunc, false, InitTalentIconFrame)
 
 end
+
+function TotemPowerCharacterMixin:CharacterTalents_OnBroadcast(info)
+
+    if info.TargetPlayer ~= self.Player then
+        return
+    end
+
+    self:SetTalentInfo(info)
+
+end
+
+function TotemPowerCharacterMixin:SetTalentInfo(info)
+    if info.Talents then
+        local lastIcon;
+        for k, v in ipairs(info.Talents) do
+            local icon = self.TalentIcons:Acquire()
+            icon.Icon:SetTexture(C_Spell.GetSpellTexture(v.SpellID))
+            if not lastIcon then
+                icon:SetPoint("BOTTOMLEFT", 4, 4)
+                lastIcon = icon
+            else
+                icon:SetPoint("LEFT", lastIcon, "RIGHT", 18, 0)
+                lastIcon = icon
+            end
+            icon.SpellID = v.SpellID
+            icon.Rank:SetText(v.Rank)
+            icon:Show()
+        end
+    end
+end
+
 function TotemPowerCharacterMixin:SetDataBinding(binding, height)
     self.Player = binding.Name;
     self.Name:SetText(binding.Name)
+
+    if TotemPower.PlayerTalentsCache[binding.Name] then
+        self:SetTalentInfo(TotemPower.PlayerTalentsCache[binding.Name])
+    end
+
+    if TotemPower.PlayerTotemsCache[binding.Name] then
+        for element, info in pairs(TotemPower.PlayerTotemsCache[binding.Name]) do
+            self[element]:CharacterTotem_OnSelectionChanged(info)
+        end
+    end
 end
 
 function TotemPowerCharacterMixin:ResetDataBinding()
     self.Player = nil
     self.Name:SetText("")
+    self.TalentIcons:ReleaseAll()
+
+    for _, element in ipairs(TotemPower.Elements) do
+        self[element]:ResetTotem()
+    end
+
 end
 
 

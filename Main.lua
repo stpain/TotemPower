@@ -2,40 +2,8 @@
 
 local addonName, TotemPower = ...;
 
-local Layouts = {
-	Flyout = {
-		TopLeftCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerTopLeft", x = -36, y = 20, },
-		TopRightCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerTopRight", x = 36, y = 20, },
-		BottomLeftCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerBottomLeft", x = -36, y = -40, },
-		BottomRightCorner =	{ atlas = "CharacterCreateDropdown-NineSlice-CornerBottomRight", x = 36, y = -40, },
-		TopEdge = { atlas = "_CharacterCreateDropdown-NineSlice-EdgeTop", },
-		BottomEdge = { atlas = "_CharacterCreateDropdown-NineSlice-EdgeBottom", },
-		LeftEdge = { atlas = "!CharacterCreateDropdown-NineSlice-EdgeLeft", },
-		RightEdge = { atlas = "!CharacterCreateDropdown-NineSlice-EdgeRight", },
-		Center = { atlas = "CharacterCreateDropdown-NineSlice-Center", },
-	},
-    DarkTooltip = {
-        TopLeftCorner =	{ atlas = "ChatBubble-NineSlice-CornerTopLeft", x = -2, y = 2, },
-        TopRightCorner =	{ atlas = "ChatBubble-NineSlice-CornerTopRight", x = 2, y = 2, },
-        BottomLeftCorner =	{ atlas = "ChatBubble-NineSlice-CornerBottomLeft", x = -2, y = -2, },
-        BottomRightCorner =	{ atlas = "ChatBubble-NineSlice-CornerBottomRight", x = 2, y = -2, },
-        TopEdge = { atlas = "_ChatBubble-NineSlice-EdgeTop", },
-        BottomEdge = { atlas = "_ChatBubble-NineSlice-EdgeBottom"},
-        LeftEdge = { atlas = "!ChatBubble-NineSlice-EdgeLeft", },
-        RightEdge = { atlas = "!ChatBubble-NineSlice-EdgeRight", },
-        Center = { atlas = "ChatBubble-NineSlice-Center", },
-	},
-    ParentBorder = {
-        TopLeftCorner =	{ atlas = "Tooltip-NineSlice-CornerTopLeft", x=-3, y=3 },
-        TopRightCorner =	{ atlas = "Tooltip-NineSlice-CornerTopRight", x=3, y=3 },
-        BottomLeftCorner =	{ atlas = "Tooltip-NineSlice-CornerBottomLeft", x=-3, y=-3 },
-        BottomRightCorner =	{ atlas = "Tooltip-NineSlice-CornerBottomRight", x=3, y=-3 },
-        TopEdge = { atlas = "_Tooltip-NineSlice-EdgeTop", },
-        BottomEdge = { atlas = "_Tooltip-NineSlice-EdgeBottom", },
-        LeftEdge = { atlas = "!Tooltip-NineSlice-EdgeLeft", },
-        RightEdge = { atlas = "!Tooltip-NineSlice-EdgeRight", },
-    },
-}
+local Comms = TotemPower.Comms;
+
 
 BINDING_HEADER_TOTEMPOWER = addonName
 _G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot1:LeftButton"] = "Earth"
@@ -43,13 +11,6 @@ _G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot2:LeftButton"] = "Fire"
 _G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot3:LeftButton"] = "Water"
 _G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot4:LeftButton"] = "Air"
 
-
-local Elements = {
-    "Earth",
-    "Fire",
-    "Water",
-    "Air",
-}
 
 TotemPowerTotemBarMixin = {}
 function TotemPowerTotemBarMixin:OnLoad()
@@ -59,7 +20,7 @@ function TotemPowerTotemBarMixin:OnLoad()
     for i = 1, 4 do
         local button = CreateFrame("CheckButton", "TotemPowerTotemBarActionButtonSlot"..i, self, "TotemPowerSecureButton")
         button:SetNormalAtlas("search-iconframe-large")
-        button.Element = Elements[i]
+        button.Element = TotemPower.Elements[i]
         if not lastButton then
             button:SetPoint("BOTTOMLEFT", 2, 0)
             lastButton = button;
@@ -124,7 +85,7 @@ function TotemPowerMixin:OnLoad()
     TotemPower.Comms:Init()
 
     self:RegisterForDrag("LeftButton")
-    NineSliceUtil.ApplyLayout(self, Layouts.DarkTooltip)
+    NineSliceUtil.ApplyLayout(self, TotemPower.Layouts.ListviewMetal)
 
     self.Title:SetText(string.format("%s v%s", addonName, C_AddOns.GetAddOnMetadata(addonName, "Version")))
 
@@ -145,12 +106,11 @@ function TotemPowerMixin:OnLoad()
     end
 
     self.TabSystem:SetTabSelectedCallback(OnTabSelected)
-    self.TabSystem:AddTab("Group")
+    self.TabSystem:AddTab("Assignments")
     self.TabSystem:AddTab("Totem Sets")
     self.TabSystem:SetTab(1)
 
-
-    self.GroupSelectionButton:SetScript("OnClick", function(f)
+    self.CharacterList.GroupSelectionButton:SetScript("OnClick", function(f)
         if next(self.GroupMembers) ~= nil then
             MenuUtil.CreateContextMenu(f, function(f, rootDescription)
                 rootDescription:CreateTitle("Select Group")
@@ -165,6 +125,11 @@ function TotemPowerMixin:OnLoad()
         end
     end)
 
+    self.CharacterList.scrollView:SetPadding(1, 1, 1, 1, 6);
+    self.CharacterList:SetScript("OnShow", function()
+        self:OnShow()
+    end)
+
     self:LoadDummyCharacters()
 
 end
@@ -172,11 +137,38 @@ end
 function TotemPowerMixin:OnEvent(event, ...)
     if event == "GROUP_ROSTER_UPDATE" then
         self:ParseGroupMembers()
+        self:TransmitTalents()
+    end
+end
+
+function TotemPowerMixin:OnShow()
+    if IsInGroup() then
+        self:ParseGroupMembers()
+        self:TransmitTalents()
     end
 end
 
 function TotemPowerMixin:TransmitTalents()
-
+    local MyTalents = {}
+    for k, talents in ipairs(TotemPower.TalentData[TotemPower.Client]) do
+        local Entry = {}
+        for rank, spellID in ipairs(talents) do
+            if IsPlayerSpell(spellID) then
+                Entry.SpellID = spellID
+                Entry.Rank = rank
+            end
+        end
+        if Entry.SpellID and Entry.Rank then
+            table.insert(MyTalents, Entry)
+        end
+    end
+    Comms:Transmit({
+        Event = "CharacterTalents_OnBroadcast",
+        Payload = {
+            TargetPlayer = UnitName("player"),
+            Talents = MyTalents,
+        },
+    }, Comms.Group)
 end
 
 function TotemPowerMixin:ParseGroupMembers()
@@ -200,6 +192,10 @@ function TotemPowerMixin:ParseGroupMembers()
                 Name = name,
                 Level = level,
             })
+
+            table.sort(self.GroupMembers[subgroup], function(a, b)
+                return a.Name < b.Name
+            end)
         end
     end
 
@@ -220,6 +216,9 @@ function TotemPowerMixin:LoadDummyCharacters()
         },
         {
             Name = "Party3",
+        },
+        {
+            Name = "Party4",
         },
         {
             Name = UnitName("player"),
