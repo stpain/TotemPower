@@ -86,11 +86,11 @@ function Comms:OnCommReceived(Prefix, message, distribution, sender)
         CallbackEvents[data.Event](sender, data.Payload)
     end
 
-    print("------------------------")
-    print(sender)
-    print("------------------------")
-    DevTools_Dump(data)
-    print("========================")
+    -- print("------------------------")
+    -- print(sender)
+    -- print("------------------------")
+    -- DevTools_Dump(data)
+    -- print("========================")
 end
 
 

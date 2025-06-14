@@ -1,6 +1,6 @@
 ## Interface: 11507
 ## Author: TheBoringDad
-## Version: 1.0
+## Version: 1.1
 ## Title: TotemPower
 ## Notes: Totem helper for Shaman
 ## SavedVariables: TOTEM_POWER_ACCOUNT
@@ -27,7 +27,6 @@ TabSystemTemplates.xml
 
 Templates.lua
 Templates.xml
-
 
 Main.lua
 Ui.xml
