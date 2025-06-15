@@ -4,16 +4,10 @@
         <Anchors>
             <Anchor point="CENTER" x="0" y="0"/>
         </Anchors>
-        <Size x="160" y="40"/>
-        <!-- <Layers>
-            <Layer level="BACKGROUND">
-                <Texture parentKey="Background">
-                    <Color r="0.1" g="0.1" b="0.1" a="0.4"/>
-                </Texture>
-            </Layer>
-        </Layers> -->
+        <Size x="200" y="40"/>
         <Scripts>
             <OnLoad method="OnLoad"/>
+            <OnEvent method="OnEvent"/>
             <OnDragStart>
                 self:StartMoving()
             </OnDragStart>
@@ -23,7 +17,7 @@
         </Scripts>
     </Frame>
 
-    <Frame name="TotemPowerUi" mixin="TotemPowerMixin" parent="UIParent" frameStrata="MEDIUM" enableMouse="true" movable="true" hidden="true">
+    <Frame name="TotemPowerAssignmentsUi" mixin="TotemPowerAssignmentsMixin" parent="UIParent" frameStrata="MEDIUM" enableMouse="true" movable="true" hidden="true">
 
         <Anchors>
             <Anchor point="CENTER" x="0" y="0"/>
@@ -79,9 +73,17 @@
                     <Anchor point="BOTTOMRIGHT" x="-20" y="20"/>
                 </Anchors>
                 <KeyValues>
-                    <KeyValue key="itemTemplate" value="TotemPowerCharacterTemplate" type="string"/>
+                    <KeyValue key="itemTemplate" value="TotemPowerTotemSetTemplate" type="string"/>
                     <KeyValue key="elementHeight" value="40" type="number"/>
                 </KeyValues>
+                <Frames>
+                    <Button parentKey="NewTotemSetButton" inherits="UIPanelButtonTemplate" text="New Totem Set">
+                        <Anchors>
+                            <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="1" y="10"/>
+                        </Anchors>
+                        <Size x="120" y="22"/>
+                    </Button>
+                </Frames>
             </Frame>
 
 			<Frame parentKey="TabSystem" inherits="TabSystemTemplate">

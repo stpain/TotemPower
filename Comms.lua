@@ -7,7 +7,7 @@ local LibDeflate = LibStub:GetLibrary("LibDeflate")
 local LibSerialize = LibStub:GetLibrary("LibSerialize")
 
 local Comms = {
-    Prefix = "TotemPower", --name var was to long
+    Prefix = "TotemPower",
     Version = 1,
     Paused = false,
 
@@ -49,12 +49,12 @@ function Comms:Transmit(msg, channel, target)
 end
 
 local CallbackEvents = {
-    CharacterTotem_OnSelectionChanged = function(sender, payload)
+    CharacterTotem_OnTotemAssignmentChanged = function(sender, payload)
         if not TotemPower.PlayerTotemsCache[payload.TargetPlayer] then
             TotemPower.PlayerTotemsCache[payload.TargetPlayer] = {}
         end
         TotemPower.PlayerTotemsCache[payload.TargetPlayer][payload.Element] = payload
-        TotemPower.CallbackRegistry:TriggerEvent("CharacterTotem_OnSelectionChanged", payload)
+        TotemPower.CallbackRegistry:TriggerEvent("CharacterTotem_OnTotemAssignmentChanged", payload)
     end,
     CharacterTalents_OnBroadcast = function(sender, payload)
         TotemPower.PlayerTalentsCache[payload.TargetPlayer] = payload;

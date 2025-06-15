@@ -4,10 +4,6 @@
 This was a partial experiment during Wrath Classic.
 
 
-
-
-
-
 ================================================================
 # Version 0.2 
 ================================================================
@@ -15,3 +11,11 @@ Removed a lot of junk files
 Redesigned Ui
 Added Callbacks
 Tested on self character
+
+
+================================================================
+# Version 1.2
+================================================================
+Added totem sets
+Added a toggle button to the totem bar to cycle through totem sets
+Renamed some elements

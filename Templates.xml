@@ -26,7 +26,65 @@
         </Scripts>
     </Button>
 
-    <Button name="TotemPowerTotemSelectorButton" mixin="TotemPowerTotemSelectorButtonMixin" virtual="true">
+    <Button name="TotemPowerTotemSetButtonTemplate" mixin="TotemPowerTotemSetButtonMixin" virtual="true">
+        <Size x="36" y="36"/>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnClick method="OnClick"/>
+        </Scripts>
+    </Button>
+
+    <Frame name="TotemPowerTotemSetTemplate" mixin="TotemPowerTotemSetMixin" virtual="true">
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Name" inherits="GameFontNormal" justifyH="Left">
+                    <Size x="160" y="18"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="4" y="-4"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="Air" inherits="TotemPowerTotemSetButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" x="-4" y="0"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="Element" value="Air" type="string"/>
+                </KeyValues>
+            </Button>
+            <Button parentKey="Water" inherits="TotemPowerTotemSetButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent.Air" relativePoint="LEFT" x="-10" y="0"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="Element" value="Water" type="string"/>
+                </KeyValues>
+            </Button>
+            <Button parentKey="Fire" inherits="TotemPowerTotemSetButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent.Water" relativePoint="LEFT" x="-10" y="0"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="Element" value="Fire" type="string"/>
+                </KeyValues>
+            </Button>
+            <Button parentKey="Earth" inherits="TotemPowerTotemSetButtonTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent.Fire" relativePoint="LEFT" x="-10" y="0"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="Element" value="Earth" type="string"/>
+                </KeyValues>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+    </Frame>
+
+    <Button name="TotemPowerTotemAssignmentButtonTemplate" mixin="TotemPowerTotemAssignmentButtonMixin" virtual="true">
         <Size x="36" y="36"/>
         <Scripts>
             <OnLoad method="OnLoad"/>
@@ -36,14 +94,6 @@
 
     <Frame name="TotemPowerCharacterTemplate" mixin="TotemPowerCharacterMixin" enableMouse="true" virtual="true">
         <Layers>
-            <Layer level="BACKGROUND">
-                <Texture parentKey="Background" atlas="communitiesfinder-card" hidden="true">
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="1" y="-1"/>
-                        <Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
             <Layer level="OVERLAY">
                 <FontString parentKey="Name" inherits="GameFontNormal" justifyH="Left">
                     <Size x="160" y="18"/>
@@ -55,7 +105,7 @@
         </Layers>
 
         <Frames>
-            <Button parentKey="Air" inherits="TotemPowerTotemSelectorButton">
+            <Button parentKey="Air" inherits="TotemPowerTotemAssignmentButtonTemplate">
                 <Anchors>
                     <Anchor point="RIGHT" x="-4" y="0"/>
                 </Anchors>
@@ -63,7 +113,7 @@
                     <KeyValue key="Element" value="Air" type="string"/>
                 </KeyValues>
             </Button>
-            <Button parentKey="Water" inherits="TotemPowerTotemSelectorButton">
+            <Button parentKey="Water" inherits="TotemPowerTotemAssignmentButtonTemplate">
                 <Anchors>
                     <Anchor point="RIGHT" relativeKey="$parent.Air" relativePoint="LEFT" x="-10" y="0"/>
                 </Anchors>
@@ -71,7 +121,7 @@
                     <KeyValue key="Element" value="Water" type="string"/>
                 </KeyValues>
             </Button>
-            <Button parentKey="Fire" inherits="TotemPowerTotemSelectorButton">
+            <Button parentKey="Fire" inherits="TotemPowerTotemAssignmentButtonTemplate">
                 <Anchors>
                     <Anchor point="RIGHT" relativeKey="$parent.Water" relativePoint="LEFT" x="-10" y="0"/>
                 </Anchors>
@@ -79,7 +129,7 @@
                     <KeyValue key="Element" value="Fire" type="string"/>
                 </KeyValues>
             </Button>
-            <Button parentKey="Earth" inherits="TotemPowerTotemSelectorButton">
+            <Button parentKey="Earth" inherits="TotemPowerTotemAssignmentButtonTemplate">
                 <Anchors>
                     <Anchor point="RIGHT" relativeKey="$parent.Fire" relativePoint="LEFT" x="-10" y="0"/>
                 </Anchors>

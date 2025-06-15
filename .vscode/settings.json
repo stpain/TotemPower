@@ -46,6 +46,7 @@
         "PanelTemplates_SetNumTabs",
         "PanelTemplates_SetTab",
         "PROFESSIONS_RECIPES_TAB_NAME",
-        "MAX_RAID_MEMBERS"
+        "MAX_RAID_MEMBERS",
+        "DataProviderMixin"
     ]
 }

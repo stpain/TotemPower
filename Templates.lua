@@ -24,18 +24,18 @@ end
     This is the button players click in the group UI to set each players totem for each element.
     When the button is clicked, a message is sent to group members so their UI is kept updated.
 ]]
-TotemPowerTotemSelectorButtonMixin = {}
-function TotemPowerTotemSelectorButtonMixin:OnLoad()
+TotemPowerTotemAssignmentButtonMixin = {}
+function TotemPowerTotemAssignmentButtonMixin:OnLoad()
     self.SelectedIndex = 1
     if self.Element then
         self.TotemData = TotemPower.TotemData[TotemPower.Client][self.Element]
     end
     self:SetNormalTexture(310733)
     self:RegisterForClicks("AnyDown")
-    TotemPower.CallbackRegistry:RegisterCallback("CharacterTotem_OnSelectionChanged", self.CharacterTotem_OnSelectionChanged, self)
+    TotemPower.CallbackRegistry:RegisterCallback("CharacterTotem_OnTotemAssignmentChanged", self.CharacterTotem_OnTotemAssignmentChanged, self)
 end
 
-function TotemPowerTotemSelectorButtonMixin:OnClick()
+function TotemPowerTotemAssignmentButtonMixin:OnClick()
 
     if self.TotemData then
         self.SelectedIndex = self.SelectedIndex + 1;
@@ -44,7 +44,7 @@ function TotemPowerTotemSelectorButtonMixin:OnClick()
         end
 
         Comms:Transmit({
-            Event = "CharacterTotem_OnSelectionChanged",
+            Event = "CharacterTotem_OnTotemAssignmentChanged",
             Payload = {
                 TargetPlayer = self:GetParent().Player,
                 Element = self.Element,
@@ -56,7 +56,7 @@ function TotemPowerTotemSelectorButtonMixin:OnClick()
 
 end
 
-function TotemPowerTotemSelectorButtonMixin:CharacterTotem_OnSelectionChanged(info)
+function TotemPowerTotemAssignmentButtonMixin:CharacterTotem_OnTotemAssignmentChanged(info)
 
     if info.TargetPlayer ~= self:GetParent().Player then
         return
@@ -73,7 +73,7 @@ function TotemPowerTotemSelectorButtonMixin:CharacterTotem_OnSelectionChanged(in
     end
 end
 
-function TotemPowerTotemSelectorButtonMixin:ResetTotem()
+function TotemPowerTotemAssignmentButtonMixin:ResetTotem()
     self.SelectedIndex = 1;
     self:SetNormalTexture(310733)
     self.SpellID = nil
@@ -154,7 +154,7 @@ function TotemPowerCharacterMixin:SetDataBinding(binding, height)
 
     if TotemPower.PlayerTotemsCache[binding.Name] then
         for element, info in pairs(TotemPower.PlayerTotemsCache[binding.Name]) do
-            self[element]:CharacterTotem_OnSelectionChanged(info)
+            self[element]:CharacterTotem_OnTotemAssignmentChanged(info)
         end
     end
 end
@@ -183,11 +183,29 @@ end
 ]]
 TotemPowerSecureButtonMixin = {}
 function TotemPowerSecureButtonMixin:OnLoad()
-    self:RegisterForClicks("AnyUp", "AnyDown")
-    TotemPower.CallbackRegistry:RegisterCallback("CharacterTotem_OnSelectionChanged", self.CharacterTotem_OnSelectionChanged, self)
+    self:RegisterForClicks("AnyUp")
+    TotemPower.CallbackRegistry:RegisterCallback("CharacterTotem_OnTotemAssignmentChanged", self.CharacterTotem_OnTotemAssignmentChanged, self)
 end
 
-function TotemPowerSecureButtonMixin:CharacterTotem_OnSelectionChanged(info)
+function TotemPowerSecureButtonMixin:SetTotemSpellID(spellID)
+    self.Icon:SetTexture(nil)
+    if type(spellID) == "number" then -- and IsPlayerSpell(spellID) then
+        local spell = Spell:CreateFromSpellID(spellID)
+        if not spell:IsSpellEmpty() then
+            spell:ContinueOnSpellLoad(function()
+                self.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
+                self:SetAttribute("type", "spell")
+                self:SetAttribute("spell", C_Spell.GetSpellName(spellID))
+            end)
+        end
+    end
+end
+
+function TotemPowerSecureButtonMixin:CharacterTotem_OnTotemAssignmentChanged(info)
+
+    if self.CommsLocked == true then
+        return;
+    end
 
     if info.TargetPlayer ~= UnitName("player") then
         return
@@ -197,15 +215,82 @@ function TotemPowerSecureButtonMixin:CharacterTotem_OnSelectionChanged(info)
         return
     end
 
-    local spell = Spell:CreateFromSpellID(info.SpellID)
-    if not spell:IsSpellEmpty() then
-        spell:ContinueOnSpellLoad(function()
-            self.Icon:SetTexture(C_Spell.GetSpellTexture(info.SpellID))
-            self:SetAttribute("type", "spell")
-            self:SetAttribute("spell", C_Spell.GetSpellName(info.SpellID))
-        end)
+    self:SetTotemSpellID(info.SpellID)
+
+end
+
+
+
+
+
+
+TotemPowerTotemSetButtonMixin = {}
+function TotemPowerTotemSetButtonMixin:OnLoad()
+    self.SelectedIndex = 1
+    if self.Element then
+        self.TotemData = TotemPower.TotemData[TotemPower.Client][self.Element]
+    end
+    self:SetNormalTexture(310733)
+    self:RegisterForClicks("AnyDown")
+end
+
+function TotemPowerTotemSetButtonMixin:OnClick()
+
+    if self.TotemData then
+        self.SelectedIndex = self.SelectedIndex + 1;
+        if self.SelectedIndex > #self.TotemData then
+            self.SelectedIndex = 1
+        end
+
+        local spellID = self.TotemData[self.SelectedIndex]
+        self:SetNormalTexture(C_Spell.GetSpellTexture(spellID))
+
+        if self:GetParent().TotemSet then
+            self:GetParent().TotemSet.Totems[self.Element] = self.SelectedIndex
+        end
+
+    end
+
+end
+
+function TotemPowerTotemSetButtonMixin:SetSelectedIndex(index)
+    self.SelectedIndex = index;
+    local spellID = self.TotemData[self.SelectedIndex]
+    self:SetNormalTexture(C_Spell.GetSpellTexture(spellID))
+end
+
+function TotemPowerTotemSetButtonMixin:ResetTotem()
+    self.SelectedIndex = 1;
+    self:SetNormalTexture(310733)
+    self.SpellID = nil
+end
+
+
+
+
+TotemPowerTotemSetMixin = {}
+function TotemPowerTotemSetMixin:OnLoad()
+    NineSliceUtil.ApplyLayout(self, TotemPower.Layouts.Tooltip)
+end
+function TotemPowerTotemSetMixin:SetDataBinding(binding, height)
+    self.TotemSet = binding
+    self.Name:SetText(binding.TotemSetID)
+
+    for _, element in ipairs(TotemPower.Elements) do
+        self[element]:SetSelectedIndex(binding.Totems[element])
     end
 end
+function TotemPowerTotemSetMixin:ResetDataBinding()
+    self.TotemSet = nil
+end
+
+
+
+
+
+
+
+
 
 
 

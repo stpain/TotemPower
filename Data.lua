@@ -2,6 +2,13 @@
 
 local addonName, TotemPower = ...;
 
+BINDING_HEADER_TOTEMPOWER = addonName
+_G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot1:LeftButton"] = "Earth"
+_G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot2:LeftButton"] = "Fire"
+_G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot3:LeftButton"] = "Water"
+_G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot4:LeftButton"] = "Air"
+_G["BINDING_NAME_CLICK TotemPowerTotemBarTotemSetSelectorButton:LeftButton"] = "Swap totem sets"
+
 TotemPower.Client = "Vanilla"
 
 if WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
@@ -110,6 +117,11 @@ TotemPower.TotemData = {
 
     },
 }
+function TotemPower.GetTotemSpellIDFromElementIndex(element, index)
+    if TotemPower.TotemData[TotemPower.Client][element] and TotemPower.TotemData[TotemPower.Client][element][index] then
+        return TotemPower.TotemData[TotemPower.Client][element][index]
+    end
+end
 
 
 TotemPower.TalentData = {
@@ -131,3 +143,77 @@ TotemPower.TalentData = {
         { 3627, },
     }
 }
+
+
+
+
+
+--[[
+local totemSlots = {
+    elements = {
+        fire = 133,
+        earth = 134,
+        water = 135,
+        air = 136,
+    },
+    ancestors = {
+        fire = 137,
+        earth = 138,
+        water = 139,
+        air = 140,
+    },
+    spirits = {
+        fire = 141,
+        earth = 142,
+        water = 143,
+        air = 144,
+    },
+}
+
+
+function addon.api.wrath.getTotemsForSlotIndex(slotIndex)
+
+    local totem1, totem2, totem3, totem4, totem5, totem6, totem7 = GetMultiCastTotemSpells(slotIndex)
+
+    return {
+        [1] = totem1,
+        [2] = totem2,
+        [3] = totem3,
+        [4] = totem4,
+        [5] = totem5,
+        [6] = totem6,
+        [7] = totem7,
+    }
+
+end
+
+
+function addon.api.wrath.getAllAvailableTotemsForPlayer()
+
+    local playerTotems = {}
+
+    local elements = {}
+    for i = 133, 136, 1 do
+        local totems = addon.api.wrath.getTotemsForSlotIndex(i)
+        table.insert(elements, totems)
+    end
+    table.insert(playerTotems, elements)
+
+    local ancestors = {}
+    for i = 137, 140, 1 do
+        local totems = addon.api.wrath.getTotemsForSlotIndex(i)
+        table.insert(ancestors, totems)
+    end
+    table.insert(playerTotems, ancestors)
+
+    local spirits = {}
+    for i = 141, 144, 1 do
+        local totems = addon.api.wrath.getTotemsForSlotIndex(i)
+        table.insert(spirits, totems)
+    end
+    table.insert(playerTotems, spirits)
+
+    return playerTotems;
+
+end
+]]

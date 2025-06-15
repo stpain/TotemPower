@@ -5,17 +5,88 @@ local addonName, TotemPower = ...;
 local Comms = TotemPower.Comms;
 
 
-BINDING_HEADER_TOTEMPOWER = addonName
-_G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot1:LeftButton"] = "Earth"
-_G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot2:LeftButton"] = "Fire"
-_G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot3:LeftButton"] = "Water"
-_G["BINDING_NAME_CLICK TotemPowerTotemBarActionButtonSlot4:LeftButton"] = "Air"
+
+--[[
+    TotemSetDataProvider
+
+    This is the data provider for user created totem sets.
+]]
+local TotemSetDataProvider = CreateFromMixins(DataProviderMixin)
+function TotemSetDataProvider:FindTotemSetByID(totemSetID)
+    local totemSet = self:FindElementDataByPredicate(function(totemSet)
+        return totemSet.TotemSetID == totemSetID
+    end)
+    return totemSet;
+end
+function TotemSetDataProvider:InsertTotemSet(newTotemSet)
+    local totemSetExists = self:FindElementDataByPredicate(function(totemSet)
+        return newTotemSet.TotemSetID == totemSet.TotemSetID
+    end)
+    if not totemSetExists then
+        self:Insert(newTotemSet)
+
+        --for now just do a full reload on the listview
+        TotemPower.CallbackRegistry:TriggerEvent("TotemSet_OnSetAdded")
+    end
+end
+
+
+
+local SavedVariables = {}
+function SavedVariables:Init()
+    
+    if TotemPowerTotemSetsSavedvariables == nil then
+        TotemSetDataProvider:Init({})
+        TotemPowerTotemSetsSavedvariables = TotemSetDataProvider:GetCollection()
+    else
+        local data = TotemPowerTotemSetsSavedvariables;
+        TotemSetDataProvider:Init(data)
+        TotemPowerTotemSetsSavedvariables = TotemSetDataProvider:GetCollection()
+    end
+
+    if TotemPowerTotemBarConfig == nil then
+        TotemPowerTotemBarConfig = {
+            LastTotemSetID = 1,
+            IsCommslocked = true,
+        }
+    end
+
+    self.TotemBarConfig = TotemPowerTotemBarConfig;
+
+end
+
+
+
+
+
+
+local EventsFrame = CreateFrame("Frame")
+EventsFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+EventsFrame:SetScript("OnEvent", function(self, event, ...)
+    if event == "PLAYER_ENTERING_WORLD" then
+        SavedVariables:Init()
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+    end
+end)
+
+
+
+
+
+
+
+
 
 
 TotemPowerTotemBarMixin = {}
 function TotemPowerTotemBarMixin:OnLoad()
+
     self:RegisterForDrag("LeftButton")
+
+    self:RegisterEvent("GROUP_ROSTER_UPDATE")
+
     self.ActionButtons = {}
+
     local lastButton;
     for i = 1, 4 do
         local button = CreateFrame("CheckButton", "TotemPowerTotemBarActionButtonSlot"..i, self, "TotemPowerSecureButton")
@@ -30,6 +101,39 @@ function TotemPowerTotemBarMixin:OnLoad()
         end
         self.ActionButtons[i] = button;
     end
+
+    self.TotemSetSelectorButton = CreateFrame("CheckButton", "TotemPowerTotemBarTotemSetSelectorButton", self, "TotemPowerSecureButton")
+    self.TotemSetSelectorButton:SetPoint("BOTTOMLEFT", lastButton, "BOTTOMRIGHT", 4, 0)
+    self.TotemSetSelectorButton:SetNormalAtlas("search-iconframe-large")
+    self.TotemSetSelectorButton.Icon:SetAtlas("common-icon-undo")
+    self.TotemSetSelectorButton.Icon:ClearAllPoints()
+    self.TotemSetSelectorButton.Icon:SetPoint("TOPLEFT", 6, -6)
+    self.TotemSetSelectorButton.Icon:SetPoint("BOTTOMRIGHT", -6, 6)
+    self.TotemSetSelectorButton:SetScript("OnClick", function()
+        if InCombatLockdown() or UnitAffectingCombat("player") then
+            return;
+        end
+        --print("click")
+        --need to cycle through any totem sets the player has
+        local lastTotemSetIndex = SavedVariables.TotemBarConfig.LastTotemSetID;
+        --print(lastTotemSetIndex)
+        if lastTotemSetIndex then
+            local set = TotemSetDataProvider:Find(lastTotemSetIndex)
+            if set and set.Totems then
+                --DevTools_Dump(set)
+                for _, button in ipairs(self.ActionButtons) do
+                    if set.Totems[button.Element] then
+                        --print(button.Element, set.Totems[button.Element])
+                        button:SetTotemSpellID(TotemPower.GetTotemSpellIDFromElementIndex(button.Element, set.Totems[button.Element]))
+                    end
+                end
+                SavedVariables.TotemBarConfig.LastTotemSetID = SavedVariables.TotemBarConfig.LastTotemSetID + 1
+                if SavedVariables.TotemBarConfig.LastTotemSetID > TotemSetDataProvider:GetSize() then
+                    SavedVariables.TotemBarConfig.LastTotemSetID = 1;
+                end
+            end
+        end
+    end)
 
     self.HeaderBar = CreateFrame("Frame", nil, self)
     self.HeaderBar:SetPoint("BOTTOMLEFT", self, "TOPLEFT")
@@ -59,10 +163,27 @@ function TotemPowerTotemBarMixin:OnLoad()
             rootDescription:CreateTitle(addonName, WHITE_FONT_COLOR)
             rootDescription:CreateDivider()
             rootDescription:CreateButton("Open Assignments", function()
-                TotemPowerUi:Show()
+                TotemPowerAssignmentsUi:Show()
             end)
         end)
     end)
+end
+
+function TotemPowerTotemBarMixin:ToggleButtonCommsLock(locked)
+    for _, button in ipairs(self.ActionButtons) do
+        button.Commslocked = locked
+    end
+    SavedVariables.TotemBarConfig.IsCommslocked = locked;
+end
+
+function TotemPowerTotemBarMixin:OnEvent(event, ...)
+    if event == "GROUP_ROSTER_UPDATE" then
+        if IsInGroup() then
+            self:ToggleButtonCommsLock(false)
+        else
+            self:ToggleButtonCommsLock(true)
+        end
+    end
 end
 
 
@@ -75,10 +196,8 @@ end
 
 
 
-
-
-TotemPowerMixin = {}
-function TotemPowerMixin:OnLoad()
+TotemPowerAssignmentsMixin = {}
+function TotemPowerAssignmentsMixin:OnLoad()
 
     self:RegisterEvent("GROUP_ROSTER_UPDATE")
 
@@ -127,28 +246,48 @@ function TotemPowerMixin:OnLoad()
 
     self.CharacterList.scrollView:SetPadding(1, 1, 1, 1, 6);
     self.CharacterList:SetScript("OnShow", function()
-        self:OnShow()
+        self:RefreshGroup()
+    end)
+
+    TotemPower.CallbackRegistry:RegisterCallback("TotemSet_OnSetAdded", self.LoadTotemSets, self)
+    self.TotemSetsList:SetScript("OnShow", function()
+        self:LoadTotemSets()
+    end)
+    self.TotemSetsList.NewTotemSetButton:SetScript("OnClick", function()
+        local newSet = {
+            TotemSetID = time(),
+            Totems = {
+                Earth = 1,
+                Fire = 1,
+                Water = 1,
+                Air = 1,
+            }
+        }
+        TotemSetDataProvider:InsertTotemSet(newSet)
     end)
 
     self:LoadDummyCharacters()
 
 end
 
-function TotemPowerMixin:OnEvent(event, ...)
+function TotemPowerAssignmentsMixin:OnEvent(event, ...)
     if event == "GROUP_ROSTER_UPDATE" then
-        self:ParseGroupMembers()
-        self:TransmitTalents()
+        self:RefreshGroup()
     end
 end
 
-function TotemPowerMixin:OnShow()
+function TotemPowerAssignmentsMixin:RefreshGroup()
     if IsInGroup() then
         self:ParseGroupMembers()
         self:TransmitTalents()
     end
 end
 
-function TotemPowerMixin:TransmitTalents()
+function TotemPowerAssignmentsMixin:OnShow()
+
+end
+
+function TotemPowerAssignmentsMixin:TransmitTalents()
     local MyTalents = {}
     for k, talents in ipairs(TotemPower.TalentData[TotemPower.Client]) do
         local Entry = {}
@@ -171,7 +310,7 @@ function TotemPowerMixin:TransmitTalents()
     }, Comms.Group)
 end
 
-function TotemPowerMixin:ParseGroupMembers()
+function TotemPowerAssignmentsMixin:ParseGroupMembers()
 
     self.GroupMembers = {}
     self.MyGroupID = nil;
@@ -205,7 +344,7 @@ function TotemPowerMixin:ParseGroupMembers()
 
 end
 
-function TotemPowerMixin:LoadDummyCharacters()
+function TotemPowerAssignmentsMixin:LoadDummyCharacters()
 
     local characters = {
         {
@@ -226,4 +365,9 @@ function TotemPowerMixin:LoadDummyCharacters()
     }
 
     self.CharacterList.scrollView:SetDataProvider(CreateDataProvider(characters))
+end
+
+
+function TotemPowerAssignmentsMixin:LoadTotemSets()
+    self.TotemSetsList.scrollView:SetDataProvider(TotemSetDataProvider)
 end
