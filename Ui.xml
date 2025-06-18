@@ -1,5 +1,21 @@
 <Ui>
 
+    <Frame name="TotemPowerPlayerTotems" mixin="TotemPowerPlayerTotemsMixin" parent="UIParent" enableMouse="true" movable="true">
+        <Anchors>
+            <Anchor point="CENTER" x="0" y="0"/>
+        </Anchors>
+        <Size x="159" y="36"/>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnDragStart>
+                self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                self:StopMovingOrSizing()
+            </OnDragStop>
+        </Scripts>
+    </Frame>
+
     <Frame name="TotemPowerTotemBar" mixin="TotemPowerTotemBarMixin" parent="UIParent" enableMouse="true" movable="true">
         <Anchors>
             <Anchor point="CENTER" x="0" y="0"/>

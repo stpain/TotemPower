@@ -47,6 +47,8 @@
         "PanelTemplates_SetTab",
         "PROFESSIONS_RECIPES_TAB_NAME",
         "MAX_RAID_MEMBERS",
-        "DataProviderMixin"
-    ]
+        "DataProviderMixin",
+        "PlayerFrame"
+    ],
+    "Lua.type.weakUnionCheck": true
 }

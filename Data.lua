@@ -78,6 +78,15 @@ TotemPower.Layouts = {
 	},
 }
 
+TotemPower.TotemSlots = {
+    Vanilla = {
+        Earth = 2,
+        Fire = 1,
+        Water = 3,
+        Air = 4,
+    }
+}
+
 TotemPower.TotemData = {
     Vanilla = {
         Earth = {

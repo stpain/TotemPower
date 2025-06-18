@@ -66,13 +66,48 @@ EventsFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
         SavedVariables:Init()
         self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
+        self:RunTest()
     end
 end)
 
 
+function EventsFrame:RunTest()
+
+end
 
 
 
+
+
+
+
+TotemPowerPlayerTotemsMixin = {}
+function TotemPowerPlayerTotemsMixin:OnLoad()
+    self:RegisterForDrag("LeftButton")
+    local lastButton;
+    for _, element in ipairs(TotemPower.Elements) do
+        local button = CreateFrame("Button", string.format("TotemPowerPlayerTotem%s", element), self, "TotemPowerPlayerTotemTemplate")
+        button.Element = element
+        button.TotemSlotIndex = TotemPower.TotemSlots[TotemPower.Client][element]
+
+        if element == "Earth" then
+            button.ElementBorder:SetAtlas("Relic-Iron-TraitBG")
+        elseif element == "Air" then
+            button.ElementBorder:SetAtlas("Relic-Wind-TraitBG")
+        else
+            button.ElementBorder:SetAtlas(string.format("Relic-%s-TraitBG", element))
+        end
+
+        if not lastButton then
+            button:SetPoint("LEFT", 0, 0)
+            lastButton = button
+        else
+            button:SetPoint("LEFT", lastButton, "RIGHT", 5, 0)
+            lastButton = button
+        end
+    end
+end
 
 
 
@@ -102,28 +137,16 @@ function TotemPowerTotemBarMixin:OnLoad()
         self.ActionButtons[i] = button;
     end
 
-    self.TotemSetSelectorButton = CreateFrame("CheckButton", "TotemPowerTotemBarTotemSetSelectorButton", self, "TotemPowerSecureButton")
-    self.TotemSetSelectorButton:SetPoint("BOTTOMLEFT", lastButton, "BOTTOMRIGHT", 4, 0)
-    self.TotemSetSelectorButton:SetNormalAtlas("search-iconframe-large")
-    self.TotemSetSelectorButton.Icon:SetAtlas("common-icon-undo")
-    self.TotemSetSelectorButton.Icon:ClearAllPoints()
-    self.TotemSetSelectorButton.Icon:SetPoint("TOPLEFT", 6, -6)
-    self.TotemSetSelectorButton.Icon:SetPoint("BOTTOMRIGHT", -6, 6)
-    self.TotemSetSelectorButton:SetScript("OnClick", function()
+    local function SetTotemBarTotems()
         if InCombatLockdown() or UnitAffectingCombat("player") then
             return;
         end
-        --print("click")
-        --need to cycle through any totem sets the player has
         local lastTotemSetIndex = SavedVariables.TotemBarConfig.LastTotemSetID;
-        --print(lastTotemSetIndex)
         if lastTotemSetIndex then
             local set = TotemSetDataProvider:Find(lastTotemSetIndex)
             if set and set.Totems then
-                --DevTools_Dump(set)
                 for _, button in ipairs(self.ActionButtons) do
                     if set.Totems[button.Element] then
-                        --print(button.Element, set.Totems[button.Element])
                         button:SetTotemSpellID(TotemPower.GetTotemSpellIDFromElementIndex(button.Element, set.Totems[button.Element]))
                     end
                 end
@@ -133,6 +156,17 @@ function TotemPowerTotemBarMixin:OnLoad()
                 end
             end
         end
+    end
+
+    self.TotemSetSelectorButton = CreateFrame("CheckButton", "TotemPowerTotemBarTotemSetSelectorButton", self, "TotemPowerSecureButton")
+    self.TotemSetSelectorButton:SetPoint("BOTTOMLEFT", lastButton, "BOTTOMRIGHT", 4, 0)
+    self.TotemSetSelectorButton:SetNormalAtlas("search-iconframe-large")
+    self.TotemSetSelectorButton.Icon:SetAtlas("common-icon-undo")
+    self.TotemSetSelectorButton.Icon:ClearAllPoints()
+    self.TotemSetSelectorButton.Icon:SetPoint("TOPLEFT", 6, -6)
+    self.TotemSetSelectorButton.Icon:SetPoint("BOTTOMRIGHT", -6, 6)
+    self.TotemSetSelectorButton:SetScript("OnClick", function()
+        SetTotemBarTotems()
     end)
 
     self.HeaderBar = CreateFrame("Frame", nil, self)
@@ -366,7 +400,6 @@ function TotemPowerAssignmentsMixin:LoadDummyCharacters()
 
     self.CharacterList.scrollView:SetDataProvider(CreateDataProvider(characters))
 end
-
 
 function TotemPowerAssignmentsMixin:LoadTotemSets()
     self.TotemSetsList.scrollView:SetDataProvider(TotemSetDataProvider)

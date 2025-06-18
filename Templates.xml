@@ -1,6 +1,6 @@
 <Ui>
 
-    <Frame name="TotemPowerBaseTooltipFrame" mixin="TBDBaseTooltipMixin" enableMouse="true" virtual="true">
+    <Frame name="TotemPowerBaseTooltipFrame" mixin="TotemPowerBaseTooltipMixin" enableMouse="true" virtual="true">
         <Scripts>
             <OnEnter method="OnEnter"/>
             <OnLeave>
@@ -8,8 +8,16 @@
             </OnLeave>
         </Scripts>
     </Frame>
+    <Button name="TotemPowerBaseTooltipButton" mixin="TotemPowerBaseTooltipMixin" enableMouse="true" virtual="true">
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave>
+                GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
+            </OnLeave>
+        </Scripts>
+    </Button>
 
-    <Button name="TotemPowerSecureButton" mixin="TotemPowerSecureButtonMixin" inherits="SecureActionButtonTemplate" virtual="true">
+    <Button name="TotemPowerSecureButton" mixin="TotemPowerSecureButtonMixin" inherits="SecureActionButtonTemplate, TotemPowerBaseTooltipButton" virtual="true">
         <Size x="36" y="36"/>
         <Layers>
             <Layer level="ARTWORK">
@@ -26,7 +34,7 @@
         </Scripts>
     </Button>
 
-    <Button name="TotemPowerTotemSetButtonTemplate" mixin="TotemPowerTotemSetButtonMixin" virtual="true">
+    <Button name="TotemPowerTotemSetButtonTemplate" mixin="TotemPowerTotemSetButtonMixin" inherits="TotemPowerBaseTooltipButton" virtual="true">
         <Size x="36" y="36"/>
         <Scripts>
             <OnLoad method="OnLoad"/>
@@ -84,7 +92,7 @@
         </Scripts>
     </Frame>
 
-    <Button name="TotemPowerTotemAssignmentButtonTemplate" mixin="TotemPowerTotemAssignmentButtonMixin" virtual="true">
+    <Button name="TotemPowerTotemAssignmentButtonTemplate" mixin="TotemPowerTotemAssignmentButtonMixin" inherits="TotemPowerBaseTooltipButton" virtual="true">
         <Size x="36" y="36"/>
         <Scripts>
             <OnLoad method="OnLoad"/>
@@ -143,6 +151,60 @@
         </Scripts>
 
     </Frame>
+
+    <Texture name="CooldownSwipeTexture" virtual="true">
+
+    </Texture>
+
+    <Button name="TotemPowerPlayerTotemTemplate" mixin="TotemPowerPlayerTotemMixin" virtual="true">
+        <Size x="36" y="36"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture parentKey="BorderRing" atlas="worldquest-tracker-ring" hidden="false">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="-4" y="4"/>
+                        <Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="ElementBorder" hidden="true">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="-14" y="14"/>
+                        <Anchor point="BOTTOMRIGHT" x="14" y="-14"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Icon">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="3" y="-3"/>
+                        <Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+                    </Anchors>
+                </Texture>
+                <MaskTexture parentKey="mask" file="Interface/CHARACTERFRAME/TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="2" y="-2"/>
+                        <Anchor point="BOTTOMRIGHT" x="-2" y="2"/>                 
+                    </Anchors>
+                    <MaskedTextures>
+                        <MaskedTexture childKey="Icon"/>
+                    </MaskedTextures>
+                </MaskTexture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="false" reverse="false" useParentLevel="false">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="3" y="-3"/>
+                    <Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+                </Anchors>
+            </Cooldown>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnEvent method="OnEvent"/>
+        </Scripts>
+    </Button>
+
 
 
 </Ui>

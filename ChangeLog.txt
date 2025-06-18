@@ -19,3 +19,9 @@ Tested on self character
 Added totem sets
 Added a toggle button to the totem bar to cycle through totem sets
 Renamed some elements
+
+
+================================================================
+# Version 2.0
+================================================================
+Added player totem bar to show remaining time on active totems

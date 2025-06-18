@@ -5,8 +5,8 @@ local name, TotemPower = ...;
 local Comms = TotemPower.Comms;
 
 
-TBDBaseTooltipMixin = {}
-function TBDBaseTooltipMixin:OnEnter()
+TotemPowerBaseTooltipMixin = {}
+function TotemPowerBaseTooltipMixin:OnEnter()
     if self.SpellID then
         GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
         GameTooltip:SetSpellByID(self.SpellID)
@@ -68,8 +68,8 @@ function TotemPowerTotemAssignmentButtonMixin:CharacterTotem_OnTotemAssignmentCh
     
     if info.SelectedIndex and self.TotemData and self.TotemData[self.SelectedIndex] then
         self.SelectedIndex = info.SelectedIndex
-        local spellID = self.TotemData[self.SelectedIndex]
-        self:SetNormalTexture(C_Spell.GetSpellTexture(spellID))
+        self.SpellID = self.TotemData[self.SelectedIndex]
+        self:SetNormalTexture(C_Spell.GetSpellTexture(self.SpellID))
     end
 end
 
@@ -188,6 +188,7 @@ function TotemPowerSecureButtonMixin:OnLoad()
 end
 
 function TotemPowerSecureButtonMixin:SetTotemSpellID(spellID)
+    self.SpellID = nil
     self.Icon:SetTexture(nil)
     if type(spellID) == "number" then -- and IsPlayerSpell(spellID) then
         local spell = Spell:CreateFromSpellID(spellID)
@@ -196,6 +197,7 @@ function TotemPowerSecureButtonMixin:SetTotemSpellID(spellID)
                 self.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
                 self:SetAttribute("type", "spell")
                 self:SetAttribute("spell", C_Spell.GetSpellName(spellID))
+                self.SpellID = spellID
             end)
         end
     end
@@ -242,8 +244,8 @@ function TotemPowerTotemSetButtonMixin:OnClick()
             self.SelectedIndex = 1
         end
 
-        local spellID = self.TotemData[self.SelectedIndex]
-        self:SetNormalTexture(C_Spell.GetSpellTexture(spellID))
+        self.SpellID = self.TotemData[self.SelectedIndex]
+        self:SetNormalTexture(C_Spell.GetSpellTexture(self.SpellID))
 
         if self:GetParent().TotemSet then
             self:GetParent().TotemSet.Totems[self.Element] = self.SelectedIndex
@@ -255,8 +257,8 @@ end
 
 function TotemPowerTotemSetButtonMixin:SetSelectedIndex(index)
     self.SelectedIndex = index;
-    local spellID = self.TotemData[self.SelectedIndex]
-    self:SetNormalTexture(C_Spell.GetSpellTexture(spellID))
+    self.SpellID = self.TotemData[self.SelectedIndex]
+    self:SetNormalTexture(C_Spell.GetSpellTexture(self.SpellID))
 end
 
 function TotemPowerTotemSetButtonMixin:ResetTotem()
@@ -283,6 +285,46 @@ end
 function TotemPowerTotemSetMixin:ResetDataBinding()
     self.TotemSet = nil
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TotemPowerPlayerTotemMixin = {}
+function TotemPowerPlayerTotemMixin:OnLoad()
+    self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+    self.Cooldown:SetUseCircularEdge(true)
+    self.Cooldown:SetSwipeTexture("Interface/CharacterFrame/TempPortraitAlphaMask", 0.3, 0.6, 1.0, 0.8)
+end
+
+function TotemPowerPlayerTotemMixin:OnEvent(event, ...)
+    if event == "UNIT_SPELLCAST_SUCCEEDED" then
+        --local target, castGUID, _spellID = ...;
+        local haveTotem, totemName, startTime, duration, icon, modRate, spellID = GetTotemInfo(self.TotemSlotIndex)
+        -- if totemName == "" then
+        --     self:Hide()
+        --     return
+        -- else
+        --     self:Show()
+        -- end
+        if icon then
+            self.Icon:SetTexture(icon)
+            self.Cooldown:SetCooldown(startTime, duration)
+        end
+    end
+end
+
+
+
 
 
 
